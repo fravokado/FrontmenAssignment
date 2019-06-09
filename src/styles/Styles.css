@@ -1,0 +1,21 @@
+.root {
+    flex-grow: 1;
+    max-width: 752;
+}
+
+.controls {
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.lists {
+    padding: 10px;
+}
+
+.listTitle {
+    
+}
+
+.card {
+    background-color: #fafafa;
+}
