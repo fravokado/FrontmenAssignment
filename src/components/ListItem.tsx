@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListItem, ListItemText, ListItemSecondaryAction, IconButton } from '@material-ui/core';
 import { Add, Delete } from '@material-ui/icons';
-import ListItemProps from '../models/ListItemProps';
+import ListItemProps from '../models/ListItem';
 import ListTypes from '../models/ListTypes';
 
 const ListItemComponent: React.FC<ListItemProps> = (props) => {

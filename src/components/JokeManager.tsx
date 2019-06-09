@@ -1,21 +1,21 @@
 import React from 'react';
-import AppState from '../models/AppState';
 import { getRandomJokes } from '../api/JokesAPI';
 import { Joke, JokeMap } from '../models/Joke';
-import AppProps from '../models/AppProps';
+import { JokeManagerProps, JokeManagerState } from '../models/JokeManager';
 import { Grid } from '@material-ui/core';
-import ControlsComponent from '../components/ControlsComponent';
+import ControlsComponent from './Controls';
 import ListTypes from '../models/ListTypes';
-import ListComponent from '../components/ListComponent'
+import ListComponent from './List'
+import { isLoggedin } from './Login'
 
 const NUMBER_OF_JOKES = 10;
 const STORAGE_KEY = 'favouriteList';
 const TIMER_DURATION = 5000;
 
-class AppContainer extends React.Component<AppProps, AppState> {
+class JokeManager extends React.Component<JokeManagerProps, JokeManagerState> {
     interval: any;
 
-    constructor(props: AppProps) {
+    constructor(props: JokeManagerProps) {
         super(props);
         this.state = {
             currentJokes: {},
@@ -118,31 +118,36 @@ class AppContainer extends React.Component<AppProps, AppState> {
     }
 
     render() {
-        return(
-            <div className={'root'}>
-                <ControlsComponent
-                    timerEnabled={this.state.timerEnabled}
-                    fetchJokes={this.fetchJokes}
-                    handleTimer={this.handleTimer} />
-                <Grid container spacing={2} className={'lists'}>
-                    <Grid item xs={12} md={6}>
-                        <ListComponent
-                            listTitle={'Random jokes'}
-                            listType={ListTypes.Add}
-                            listItems={this.state.currentJokes}
-                            listItemAction={this.addToFavourite} />
+        if (!isLoggedin()) {
+            this.props.history.push('/login');
+            return null;
+        } else {
+            return(
+                <div className={'root'}>
+                    <ControlsComponent
+                        timerEnabled={this.state.timerEnabled}
+                        fetchJokes={this.fetchJokes}
+                        handleTimer={this.handleTimer} />
+                    <Grid container spacing={2} className={'lists'}>
+                        <Grid item xs={12} md={6}>
+                            <ListComponent
+                                listTitle={'Random jokes'}
+                                listType={ListTypes.Add}
+                                listItems={this.state.currentJokes}
+                                listItemAction={this.addToFavourite} />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <ListComponent
+                                listTitle={'Favourite jokes'}
+                                listType={ListTypes.Remove}
+                                listItems={this.state.favouriteJokes}
+                                listItemAction={this.removeFromFavourite} />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                        <ListComponent
-                            listTitle={'Favourite jokes'}
-                            listType={ListTypes.Remove}
-                            listItems={this.state.favouriteJokes}
-                            listItemAction={this.removeFromFavourite} />
-                    </Grid>
-                </Grid>
-            </div>
-        );
+                </div>
+            );
+        }
     }
 }
 
-export default AppContainer;
+export default JokeManager;

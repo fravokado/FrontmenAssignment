@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, List } from '@material-ui/core';
-import ListProps from '../models/ListProps';
-import ListItemComponent from './ListItemComponent';
+import ListProps from '../models/List';
+import ListItemComponent from './ListItem';
 
 const ListComponent: React.FC<ListProps> = (props) => {
     let items = [];

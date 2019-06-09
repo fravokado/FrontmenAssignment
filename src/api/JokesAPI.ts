@@ -1,5 +1,5 @@
 import { Joke } from '../models/Joke';
-import ApiResponse from '../models/ApiResponse';
+import ApiResponse from '../models/API';
 
 const URL = 'http://api.icndb.com/jokes/random/';
 

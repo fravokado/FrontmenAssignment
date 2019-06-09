@@ -19,3 +19,13 @@
 .card {
     background-color: #fafafa;
 }
+
+.login {
+    display: flex;
+    flex-direction: column;
+    max-width: 350px;
+}
+
+.loginItem {
+    margin: 5px !important;
+}
