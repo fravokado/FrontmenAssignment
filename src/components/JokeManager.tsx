@@ -1,7 +1,7 @@
 import React from 'react';
 import { getRandomJokes } from '../api/JokesAPI';
 import { Joke, JokeMap } from '../models/Joke';
-import { JokeManagerProps, JokeManagerState } from '../models/JokeManager';
+import { JokeManagerProps, JokeManagerState, JokeListState } from '../models/JokeManager';
 import { Grid } from '@material-ui/core';
 import ControlsComponent from './Controls';
 import ListTypes from '../models/ListTypes';
@@ -18,26 +18,42 @@ class JokeManager extends React.Component<JokeManagerProps, JokeManagerState> {
     constructor(props: JokeManagerProps) {
         super(props);
         this.state = {
-            currentJokes: {},
-            favouriteJokes: {},
+            currentJokes: {
+                idList: [],
+                jokeMap: {}
+            },
+            favouriteJokes: {
+                idList: [],
+                jokeMap: {}
+            },
             timerEnabled: false
         };
         this.interval = null;
     }
 
     haveSpace = (): boolean => {
-        return Object.keys(this.state.favouriteJokes).length < NUMBER_OF_JOKES;
+        return this.state.favouriteJokes.idList.length < NUMBER_OF_JOKES;
     }
 
     alreadyAdded = (id: number): boolean => {
-        if (this.state.favouriteJokes[id]) {
+        if (this.state.favouriteJokes.jokeMap[id]) {
             return true;
         } else {
             return false;
         };
     }
 
-    updateFavouriteStateAndStorage = (newFavourite: JokeMap) => {
+    appendToNewFavouriteState = (joke: Joke): JokeListState => {
+        return {
+            idList: [...this.state.favouriteJokes.idList, joke.id],
+            jokeMap: {
+                ...this.state.favouriteJokes.jokeMap,
+                [joke.id]: {...joke}
+            }
+        };
+    }
+
+    updateFavouriteStateAndStorage = (newFavourite: JokeListState) => {
         this.setState({
             favouriteJokes: newFavourite
         });
@@ -46,12 +62,8 @@ class JokeManager extends React.Component<JokeManagerProps, JokeManagerState> {
 
     addToFavourite = (id: number) => {
         if (this.haveSpace() && !this.alreadyAdded(id)) {
-            const joke = this.state.currentJokes[id];
-            const newFavourite = {
-                ...this.state.favouriteJokes,
-                [id]: {...joke}
-            }
-            this.updateFavouriteStateAndStorage(newFavourite);
+            const joke = this.state.currentJokes.jokeMap[id];
+            this.updateFavouriteStateAndStorage(this.appendToNewFavouriteState(joke));
         } else {
             if (!this.haveSpace()) window.alert('You already have max number of jokes!');
             if (this.alreadyAdded(id)) window.alert('This joke is already added!');
@@ -59,20 +71,26 @@ class JokeManager extends React.Component<JokeManagerProps, JokeManagerState> {
     }
 
     removeFromFavourite = (id: number) => {
-        let newFavourite = {...this.state.favouriteJokes};
-        delete newFavourite[id];
+        let newFavourite: JokeListState = {...this.state.favouriteJokes};
+        let index = newFavourite.idList.indexOf(id);
+        if (index > -1) newFavourite.idList.splice(index, 1);
+        delete newFavourite.jokeMap[id];
         this.updateFavouriteStateAndStorage(newFavourite);
     }
 
     fetchJokes = () => {
         getRandomJokes(NUMBER_OF_JOKES)
             .then((jokes: Joke[]) => {
-                let current: JokeMap = {};
+                let newCurrent: JokeListState = {
+                    idList: [],
+                    jokeMap: {}
+                }
                 for (const joke of jokes) {
-                    current[joke.id] = joke;
+                    newCurrent.idList.push(joke.id);
+                    newCurrent.jokeMap[joke.id] = joke;
                 }
                 this.setState({
-                    currentJokes: current
+                    currentJokes: newCurrent
                 });
             })
             .catch(err => console.log(err));
@@ -82,17 +100,13 @@ class JokeManager extends React.Component<JokeManagerProps, JokeManagerState> {
         getRandomJokes(1)
             .then((jokes: Joke[]) => {
                 const joke = jokes[0];
-                const newFavourite = {
-                    ...this.state.favouriteJokes,
-                    [joke.id]: {...joke}
-                }
-                this.updateFavouriteStateAndStorage(newFavourite);
+                this.updateFavouriteStateAndStorage(this.appendToNewFavouriteState(joke));
             })
             .catch(err => console.log(err));
     }
 
     handleTimer = (enabled: boolean) => {
-        if (enabled) {
+        if (enabled && this.haveSpace()) {
             this.interval = setInterval(() => {
                 if (this.haveSpace()) {
                     this.fetchJoke();
@@ -105,6 +119,7 @@ class JokeManager extends React.Component<JokeManagerProps, JokeManagerState> {
         } else {
             clearInterval(this.interval);
             this.setState({timerEnabled: false});
+            window.alert('You already have max number of jokes!');
         }
     }
 

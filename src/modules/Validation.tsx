@@ -60,21 +60,33 @@ const validate = (username: string, password: string):boolean => {
     const userNameCheck = username !== '';
     const lengthCheck = password.length <= PASSWORD_MAX_LENGTH;
 
+    let range: boolean = false;
+    let valid: boolean = false;
     let straight: boolean = false;
     let consecutive: boolean = false;
 
     if (userNameCheck && lengthCheck) {
 
         for (let i = 0; i < password.length; i++) {
-            if (!characterInRange(password[i])) break;
-            if (!isValidCharacter(password[i])) break;
+            if (characterInRange(password[i])) {
+                range = true;
+            } else {
+                range = false;
+                break;
+            } 
+            if (isValidCharacter(password[i])) {
+                valid = true;
+            } else {
+                valid = false;
+                break;
+            };
             if (!straight && straightCheck(password, i)) straight = true;
             if (!consecutive && consecutiveCheck(password, i)) consecutive = true;
         }
 
     }
 
-    return straight && consecutive;
+    return range && valid && straight && consecutive;
 }
 
 export default validate;

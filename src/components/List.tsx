@@ -5,12 +5,13 @@ import ListItemComponent from './ListItem';
 
 const ListComponent: React.FC<ListProps> = (props) => {
     let items = [];
-    for (const item in props.listItems) {
+    for (const id of props.listItems.idList) {
+        const item = props.listItems.jokeMap[id];
         items.push(
             <ListItemComponent 
-                key={props.listItems[item].id}
-                id={props.listItems[item].id}
-                text={props.listItems[item].joke}
+                key={item.id}
+                id={item.id}
+                text={item.joke}
                 listType={props.listType}
                 listItemAction={props.listItemAction}
             />

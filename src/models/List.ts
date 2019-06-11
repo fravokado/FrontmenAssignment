@@ -1,9 +1,9 @@
 import ListTypes from "./ListTypes";
-import { JokeMap } from "./Joke";
+import { JokeListState } from "./JokeManager";
 
 export default interface ListProps {
     listTitle: string;
     listType: ListTypes;
-    listItems: JokeMap;
+    listItems: JokeListState;
     listItemAction(id: number): any;
 }

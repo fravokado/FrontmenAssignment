@@ -4,8 +4,13 @@ import { RouteComponentProps } from 'react-router-dom';
 export interface JokeManagerProps extends RouteComponentProps {
 }
 
+export interface JokeListState {
+    idList: number[];
+    jokeMap: JokeMap;
+}
+
 export interface JokeManagerState {
-    currentJokes: JokeMap;
-    favouriteJokes: JokeMap;
+    currentJokes: JokeListState;
+    favouriteJokes: JokeListState;
     timerEnabled: boolean;
 }
