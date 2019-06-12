@@ -119,7 +119,9 @@ class JokeManager extends React.Component<JokeManagerProps, JokeManagerState> {
         } else {
             clearInterval(this.interval);
             this.setState({timerEnabled: false});
-            window.alert('You already have max number of jokes!');
+            if (!this.haveSpace()) {
+                window.alert('You already have max number of jokes!');
+            }
         }
     }
 
